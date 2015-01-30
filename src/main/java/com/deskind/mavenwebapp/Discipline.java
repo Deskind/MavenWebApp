@@ -13,6 +13,8 @@ import javax.persistence.Table;
 @Table(name="DISCIPLINE")
 public class Discipline {
     
+    String disciplineName;
+    
     public Discipline(){
         
     }
@@ -20,8 +22,6 @@ public class Discipline {
     public Discipline(String name){
         disciplineName = name;
     }
-    
-    String disciplineName;
     
     public String myToString(){
         return this.getDisciplineName();

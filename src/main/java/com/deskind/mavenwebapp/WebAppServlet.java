@@ -1,10 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.deskind.mavenwebapp;
 
+import com.deskind.mavenwebapp.dao.HibernateDaoStudent;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -23,12 +20,12 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
 
-//MAVENWEBAPP SERVLET
 public class WebAppServlet extends HttpServlet {
 
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        HibernateDaoStudent hds;
         response.setContentType("text/html;charset=UTF-8");
         Student student;
         String message = "";
@@ -60,15 +57,12 @@ public class WebAppServlet extends HttpServlet {
                 break;
                 
             case "addStudentForm":
-                hbmSession = SessionListener.getSessionFactory().openSession();
-                transaction = hbmSession.beginTransaction();
-                student = new Student(request.getParameter("FirstName"), request.getParameter("LastName"));
-                message = "Student "+student.getStudentFirstName()+ "  "+student.getStudentLastName()+"  successfully added into database!";
-                hbmSession.save(student);
-                transaction.commit();
-                hbmSession.close();
+
+                hds = new HibernateDaoStudent();
+                message = hds.addStudent(SessionListener.getSessionFactory(), request.getParameter("FirstName"), request.getParameter("LastName"));
                 request.setAttribute("message", message);
                 request.getRequestDispatcher("forMessage.jsp").forward(request, response);
+                
                 break;
                 
                 case "delForm":
@@ -90,151 +84,73 @@ public class WebAppServlet extends HttpServlet {
                         break;
 
                 case "delStudentForm":
-                    hbmSession = SessionListener.getSessionFactory().openSession();
-                    transaction = hbmSession.beginTransaction();
-                    stList = hbmSession.createCriteria(Student.class).add(Restrictions.ilike("studentFirstName", request.getParameter("FirstName"))).
-                                                                add(Restrictions.ilike("studentLastName", request.getParameter("LastName"))).list();
-                    if(!stList.isEmpty()&&stList.size()==1){
-                    for(Student st : stList){
-                        message = "Student "+st.getStudentFirstName()+ " "+st.getStudentLastName()+" sucsessfully deleted";
-                        hbmSession.delete(st);
-                    }
-                    }if(!stList.isEmpty()&&stList.size()>1){
-                        message = "Error, some matches was found";
-                    }if(stList.isEmpty()){
-                        message = "Student not found";
-                    }
                     
+                    hds = new HibernateDaoStudent();
+                    message = hds.deleteStudent(SessionListener.getSessionFactory(), request.getParameter("FirstName"), request.getParameter("LastName"));
                     request.setAttribute("message", message);
                     request.getRequestDispatcher("forMessage.jsp").forward(request, response);
-                    transaction.commit();
-                    hbmSession.close();
                     break;
-                    
                 
                 case "getAllForm":
-                    hbmSession = SessionListener.getSessionFactory().openSession();
-                    transaction = hbmSession.beginTransaction();
-                    stList = hbmSession.createCriteria(Student.class).setMaxResults(5).list();
                     
+                    hds = new HibernateDaoStudent();
+                    stList = hds.selectAllStudents(SessionListener.getSessionFactory());
                     request.setAttribute("studentsList", stList);
                     request.getRequestDispatcher("showAll.jsp").forward(request, response);
                     
-                    transaction.commit();
-                    hbmSession.close();
                     break;
                     
                 case "findStudentForm":
-                    hbmSession = SessionListener.getSessionFactory().openSession();
-                    transaction = hbmSession.beginTransaction();
-                    stList = hbmSession.createCriteria(Student.class).add(Restrictions.ilike("studentFirstName", request.getParameter("FirstName"))).
-                                                                add(Restrictions.ilike("studentLastName", request.getParameter("LastName"))).list();
-                    if(stList.isEmpty()){
+                  
+                    hds = new HibernateDaoStudent();
+                    student = hds.findStudent(SessionListener.getSessionFactory(), request.getParameter("FirstName"), request.getParameter("LastName"));
+                    if(student.getStudentFirstName()==null&&student.getStudentLastName()==null){
                         message = "Student not found";
                         request.setAttribute("message", message);
                         request.getRequestDispatcher("forMessage.jsp").forward(request, response);
-                    }else if(!stList.isEmpty()&&stList.size()==1){
-                        Student st = stList.get(0);
-                        message = st.myToString();
-                        request.setAttribute("message", message);
-                        request.getRequestDispatcher("forMessage.jsp").forward(request, response);
                     }else{
-                        message = "Error";
+                        message = student.myToString();
                         request.setAttribute("message", message);
                         request.getRequestDispatcher("forMessage.jsp").forward(request, response);
                     }
-                    transaction.commit();
-                    hbmSession.close();
                     break;
                     
                 case "firstNameChangeForm":
-                    String newFirstName = request.getParameter("NewName");
-                    hbmSession = SessionListener.getSessionFactory().openSession();
-                    transaction = hbmSession.beginTransaction();
-                    stList = hbmSession.createCriteria(Student.class).add(Restrictions.ilike("studentFirstName", request.getParameter("FirstName"))).
-                                                                add(Restrictions.ilike("studentLastName", request.getParameter("LastName"))).list();
-                    if(stList.isEmpty()){
-                        message = "Student not found";
-                    }else if(!stList.isEmpty()&&stList.size()==1){
-                        for(Student st : stList){
-                            message = "First name changed from "+st.getStudentFirstName()+" to " + newFirstName;
-                            st.setStudentFirstName(newFirstName);
-                        }
-                    }else{
-                        message = "Error";
-                    }
-                    transaction.commit();
-                    hbmSession.close();
+                   
+                    hds = new HibernateDaoStudent();
+                    message = hds.changeFirstName(SessionListener.getSessionFactory(), request.getParameter("FirstName"), 
+                            request.getParameter("LastName"), request.getParameter("NewName"));
+                    
                     request.setAttribute("message", message);
                     request.getRequestDispatcher("forMessage.jsp").forward(request, response);
                     break;
                     
                 case "lastNameChangeForm":
-                    String newLastName = request.getParameter("NewName");
-                    hbmSession = SessionListener.getSessionFactory().openSession();
-                    transaction = hbmSession.beginTransaction();
-                    stList = hbmSession.createCriteria(Student.class).add(Restrictions.ilike("studentFirstName", request.getParameter("FirstName"))).
-                                                                add(Restrictions.ilike("studentLastName", request.getParameter("LastName"))).list();
-                    if(stList.isEmpty()){
-                        message = "Student not found";
-                    }else if(!stList.isEmpty()&&stList.size()==1){
-                        for(Student st : stList){
-                            message = "First name changed from "+st.getStudentFirstName()+" to " + newLastName;
-                            st.setStudentLastName(newLastName);
-                        }
-                    }else{
-                        message = "Error";
-                    }
-                    transaction.commit();
-                    hbmSession.close();
+
+                    hds = new HibernateDaoStudent();
+                    message = hds.changeLastName(SessionListener.getSessionFactory(), request.getParameter("FirstName"), request.getParameter("LastName"),
+                            request.getParameter("NewName"));
                     request.setAttribute("message", message);
                     request.getRequestDispatcher("forMessage.jsp").forward(request, response);
                     break;
                     
                 case "assingDisciplineForm":
-                    String disciplineName = request.getParameter("Discipline");
-                    hbmSession = SessionListener.getSessionFactory().openSession();
-                    transaction = hbmSession.beginTransaction();
-                    stList = hbmSession.createCriteria(Student.class).add(Restrictions.ilike("studentFirstName", request.getParameter("FirstName"))).
-                                                                add(Restrictions.ilike("studentLastName", request.getParameter("LastName"))).list();
-                    if(stList.isEmpty()){
-                        message = "StudentaddDisciplineList not found";
-                    }else if(!stList.isEmpty()&&stList.size()==1){
-                        for(Student st : stList){
-                            st.getDisciplineList().add(new Discipline(disciplineName));
-                            message = "Discipline "+disciplineName+" successfully added to "+st.getStudentFirstName();
-                        }
-                    }else{
-                        message = "Error";
-                    }
-                    transaction.commit();
-                    hbmSession.close();
+
+                    hds = new HibernateDaoStudent();
+                    message = hds.assignDiscipline(SessionListener.getSessionFactory(), request.getParameter("FirstName"), request.getParameter("LastName"), 
+                            request.getParameter("Discipline"));
                     request.setAttribute("message", message);
                     request.getRequestDispatcher("forMessage.jsp").forward(request, response);
                     break;
                     
                 case "getDisciplineForm":
-                    hbmSession = SessionListener.getSessionFactory().openSession();
-                    transaction = hbmSession.beginTransaction();
-                    stList = hbmSession.createCriteria(Student.class).add(Restrictions.ilike("studentFirstName", request.getParameter("FirstName"))).
-                                                                add(Restrictions.ilike("studentLastName", request.getParameter("LastName"))).list();
-                    if(stList.isEmpty()){
-                        message = "Student not found";
-                        request.setAttribute("message", message);
-                        request.getRequestDispatcher("forMessage.jsp").forward(request, response);
-                    }else if(!stList.isEmpty()&&stList.size()==1){
-                        Student st = stList.get(0);
-                        dscList = st.getDisciplineList();
-                        request.setAttribute("dscList", dscList);
-                        request.getRequestDispatcher("getDisciplines.jsp").forward(request, response);
-                    }else{
-                        message = "Error";
-                        request.setAttribute("message", message);
-                        request.getRequestDispatcher("forMessage.jsp").forward(request, response);
-                    }
-                    transaction.commit();
-                    hbmSession.close();
-                
+
+                    hds = new HibernateDaoStudent();
+                    dscList = hds.getAllStudentsDisciplines(SessionListener.getSessionFactory(), request.getParameter("FirstName"),
+                            request.getParameter("LastName"));
+                    request.setAttribute("dscList", dscList);
+                    request.getRequestDispatcher("getDisciplines.jsp").forward(request, response);
+                    break;
                 }
                     
 }

@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,39 +23,22 @@ import javax.persistence.Table;
 @Table(name="STUDENT")
 public class Student {
     
-    public Student(String fName, String lName){
-        studentFirstName = fName;
-        studentLastName = lName;
-    }
-    
-    public Student(){
-        
-    }
-    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="STUDENT_ID")
     private int studentId;
+    
     private String studentFirstName;
+    
     private String studentLastName;
     
-    @ElementCollection()
+    @ElementCollection(fetch = FetchType.EAGER)
     @JoinTable(name="DISCIPLINE", joinColumns = @JoinColumn(name = "STUDENT_ID"))
-       protected List<Discipline> disciplineList = new ArrayList();
+       protected List<Discipline> disciplineList;
     
     public String myToString(){
         return "Student ID: "+this.studentId+"   "+this.getStudentFirstName()+"   "+this.getStudentLastName();
     }
-
-    public List<Discipline> getDisciplineList() {
-        return disciplineList;
-    }
-
-    public void setDisciplineList(List<Discipline> disciplineList) {
-        this.disciplineList = disciplineList;
-    }
-    
-    
 
     public int getStudentId() {
         return studentId;
@@ -68,6 +52,10 @@ public class Student {
         return studentLastName;
     }
 
+    public List<Discipline> getDisciplineList() {
+        return disciplineList;
+    }
+
     public void setStudentId(int studentId) {
         this.studentId = studentId;
     }
@@ -79,6 +67,12 @@ public class Student {
     public void setStudentLastName(String studentLastName) {
         this.studentLastName = studentLastName;
     }
+
+    public void setDisciplineList(List<Discipline> disciplineList) {
+        this.disciplineList = disciplineList;
+    }
+
+    
 
 
     
