@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <listener>
+        <listener-class>com.deskind.mavenwebapp.servlet.SessionListener</listener-class>
+    </listener>
     <servlet>
         <servlet-name>WebAppServlet</servlet-name>
-        <servlet-class>com.deskind.mavenwebapp.WebAppServlet</servlet-class>
+        <servlet-class>com.deskind.mavenwebapp.servlet.WebAppServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>WebAppServlet</servlet-name>
         <url-pattern>/WebAppServlet</url-pattern>
     </servlet-mapping>
-    
-    <listener>
-	<listener-class>com.deskind.mavenwebapp.SessionListener</listener-class>
-    </listener>
-    
     <session-config>
         <session-timeout>
             30

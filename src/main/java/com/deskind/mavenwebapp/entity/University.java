@@ -12,13 +12,26 @@ import javax.persistence.Id;
 public class University implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long IniversityId;
+    private Long UniversityId;
     
     @Basic
     String universityName;
+    
+    public University(){
+        
+    }
+    
+    @Override
+    public String toString(){
+        return this.getUniversityName();
+    }
+    
+    public University(String universityName){
+        this.universityName = universityName;
+    }
 
     public Long getIniversityId() {
-        return IniversityId;
+        return UniversityId;
     }
 
     public String getUniversityName() {
@@ -26,7 +39,7 @@ public class University implements Serializable{
     }
 
     public void setIniversityId(Long IniversityId) {
-        this.IniversityId = IniversityId;
+        this.UniversityId = IniversityId;
     }
 
     public void setUniversityName(String universityName) {

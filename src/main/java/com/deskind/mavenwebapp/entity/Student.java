@@ -26,13 +26,23 @@ public class Student implements Serializable{
     University university;
     
     @Basic
-    String studentName;
+    String studentFirstName;
     
-   @ManyToMany
+    @Basic
+    String studentLastName;
+    
+   @ManyToMany(fetch = FetchType.EAGER)
    @JoinTable(name = "student_disciplines", joinColumns =  
 			@JoinColumn(name = "StudentId"), 
 			inverseJoinColumns =  @JoinColumn(name = "disciplineId") )
     List<Discipline> list = new ArrayList<Discipline>();
+   
+   @Override
+   public String toString(){
+       String firstName = this.getStudentFirstName();
+       String lastName = this.getStudentLastName();
+       return firstName+"  "+lastName;
+   }
 
     public Long getStudentId() {
         return StudentId;
@@ -42,8 +52,12 @@ public class Student implements Serializable{
         return university;
     }
 
-    public String getStudentName() {
-        return studentName;
+    public String getStudentFirstName() {
+        return studentFirstName;
+    }
+
+    public String getStudentLastName() {
+        return studentLastName;
     }
 
     public List<Discipline> getList() {
@@ -58,8 +72,12 @@ public class Student implements Serializable{
         this.university = university;
     }
 
-    public void setStudentName(String studentName) {
-        this.studentName = studentName;
+    public void setStudentFirstName(String studentName) {
+        this.studentFirstName = studentName;
+    }
+
+    public void setStudentLastName(String studentLastName) {
+        this.studentLastName = studentLastName;
     }
 
     public void setList(List<Discipline> list) {

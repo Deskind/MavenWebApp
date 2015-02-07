@@ -11,8 +11,12 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <h2>Select category</h2>
-        <a href="Student.html">Student</a><br>
-        <a href="Teacher.html">Teacher</a>
-        </body>
+        <h1>University Name</h1>
+        <form action="WebAppServlet">
+            <input type="hidden" name="formName" value="AddNewUniversity">
+            <input type="text" name="UniversityName">
+            <input type="submit" value="Add">
+        </form>
+              
+    </body>
 </html>

@@ -1,12 +1,14 @@
 
-package com.deskind.mavenwebapp;
+package com.deskind.mavenwebapp.servlet;
 
+import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+//@WebListener
 public class SessionListener implements HttpSessionListener {
     
     private static SessionFactory sessionFactory;
