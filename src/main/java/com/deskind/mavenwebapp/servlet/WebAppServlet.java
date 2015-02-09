@@ -1,25 +1,19 @@
     
 package com.deskind.mavenwebapp.servlet;
 
+import chekers.FormCheker;
 import com.deskind.mavenwebapp.dao.HibernateStudentDao;
 import com.deskind.mavenwebapp.dao.HibernateUniversityDao;
 import com.deskind.mavenwebapp.entity.Student;
 import com.deskind.mavenwebapp.entity.University;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.PageContext;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
 
 //@WebServlet(urlPatterns = "/WebAppServlet")
 public class WebAppServlet extends HttpServlet {
@@ -38,9 +32,15 @@ public class WebAppServlet extends HttpServlet {
         //Variables
         HibernateStudentDao hsd = new HibernateStudentDao();
         HibernateUniversityDao hud = new HibernateUniversityDao();
+        //Entitys
         Student student;
         University university;
+        //Messages for jsp pages
         String message = null;
+        String errorMessage = null;
+        //Patterns for resolve user input
+        
+        //Stores ID of the student entiry
         Long l = null;
         
         switch(inputParameter){
@@ -51,88 +51,18 @@ public class WebAppServlet extends HttpServlet {
                 break;
                 
             case "addStudent":
-                out.println("<!DOCTYPE html>");
-                out.println("<html>");
-                out.println("<head>");
-                out.println("<title>Add student</title>");            
-                out.println("</head>");
-                out.println("<body>");
-                out.println("<h1>Add student</h1>");
-                out.println("<form action=\"WebAppServlet\">");
-                out.println("<input type=\"text\" name=\"FirstName\" value=\"FirstName\">");
-                out.println("<input type=\"text\" name=\"LastName\" value=\"LastName\">");
-                out.println("<input type=\"submit\" value=\"Add student\">");
-                out.println("<input type=\"hidden\" name=\"formName\" value=\"addStudentForm\">");
-                out.println("</form>");
-                out.println("</body>");
-                out.println("</html>");
+                request.getRequestDispatcher("AddStudent.html").forward(request, response);
                 break;
                 
             case "addStudentForm":
-                message = hsd.addStudent(request.getParameter("FirstName"), 
-                                            request.getParameter("LastName"));
+                
+                message = FormCheker.chekFormParameter(request.getParameter("FirstName"), request.getParameter("LastName"));
+                if(message.equals("Operation success!")){
+                    message = hsd.addStudent(request.getParameter("FirstName"), request.getParameter("LastName"));
+                }
                 request.setAttribute("Message", message);
                 request.getRequestDispatcher("Message.jsp").forward(request, response);
-                break;
                 
-            case "delStudent":
-                    out.println("<!DOCTYPE html>");
-                    out.println("<html>");
-                    out.println("<head>");
-                    out.println("<title>Delete student</title>");            
-                    out.println("</head>");
-                    out.println("<body>");
-                    out.println("<h1>Delete student</h1>");
-                    out.println("<form action=\"WebAppServlet\">");
-                    out.println("<input type=\"text\" name=\"FirstName\" value=\"FirstName\">");
-                    out.println("<input type=\"text\" name=\"LastName\" value=\"LastName\">");
-                    out.println("<input type=\"submit\" value=\"Delete student\">");
-                    out.println("<input type=\"hidden\" name=\"formName\" value=\"delStudentForm\">");
-                    out.println("</form>");
-                    out.println("</body>");
-                    out.println("</html>");
-                break;
-            case "allTeachers":
-                
-                break;
-            case "addTeacher":
-                out.println("<!DOCTYPE html>");
-                out.println("<html>");
-                out.println("<head>");
-                out.println("<title>Add teacher</title>");            
-                out.println("</head>");
-                out.println("<body>");
-                out.println("<h1>Add teacher</h1>");
-                out.println("<form action=\"WebAppServlet\">");
-                out.println("<input type=\"text\" name=\"FirstName\" value=\"FirstName\">");
-                out.println("<input type=\"text\" name=\"LastName\" value=\"LastName\">");
-                out.println("<input type=\"submit\" value=\"Add teacher\">");
-                out.println("<input type=\"hidden\" name=\"formName\" value=\"addTeacherForm\">");
-                out.println("</form>");
-                out.println("</body>");
-                out.println("</html>");
-                break;
-                
-            case "addTeacherForm":
-                
-                break;
-                
-            case "delTeacher":
-                    out.println("<!DOCTYPE html>");
-                    out.println("<html>");
-                    out.println("<head>");
-                    out.println("<title>Delete teacher</title>");            
-                    out.println("</head>");
-                    out.println("<body>");
-                    out.println("<h1>Delete teacher</h1>");
-                    out.println("<form action=\"WebAppServlet\">");
-                    out.println("<input type=\"text\" name=\"FirstName\" value=\"FirstName\">");
-                    out.println("<input type=\"text\" name=\"LastName\" value=\"LastName\">");
-                    out.println("<input type=\"submit\" value=\"Delete teacher\">");
-                    out.println("<input type=\"hidden\" name=\"formName\" value=\"delTeacherForm\">");
-                    out.println("</form>");
-                    out.println("</body>");
-                    out.println("</html>");
                 break;
                 
             case "DelFormFromAllStudents":                      
@@ -151,16 +81,20 @@ public class WebAppServlet extends HttpServlet {
                 
             case "EditFirstName":
                 l = (Long)httpSession.getAttribute("StudentId");
-                String newFirstName = (String) request.getParameter("NewFirstName");
-                message = hsd.changeFirstName(l, newFirstName);
+                message = FormCheker.chekFormParameter(request.getParameter("NewFirstName"));
+                if(message.equals("Operation success!")){
+                message = hsd.changeFirstName(l, request.getParameter("NewFirstName"));
+                }
                 request.setAttribute("Message", message);
                 request.getRequestDispatcher("Message.jsp").forward(request, response);
                 break;
                 
             case "EditLastName":
                 l = (Long)httpSession.getAttribute("StudentId");
-                String newLastName = (String) request.getParameter("NewLastName");
-                message = hsd.changeLastName(l, newLastName);
+                message = FormCheker.chekFormParameter(request.getParameter("NewLastName"));
+                if(message.equals("Operation success!")){
+                message = hsd.changeLastName(l, request.getParameter("NewLastName"));
+                }
                 request.setAttribute("Message", message);
                 request.getRequestDispatcher("Message.jsp").forward(request, response);
                 break;
@@ -168,7 +102,7 @@ public class WebAppServlet extends HttpServlet {
                 l = (Long)httpSession.getAttribute("StudentId");
                 String universityName = (String) request.getParameter("University");
                 String test = "Add new university";
-                //If matches not found in select tag
+                //If matches was not found in select tag
                 if(universityName.equals(test)){
                     request.getRequestDispatcher("AddDisciplineFromStudentEdit.html").forward(request, response);
                 //If mathes was found in select tag
@@ -182,8 +116,10 @@ public class WebAppServlet extends HttpServlet {
                 break;
                 
             case "AddNewUniversity":
-                String newUniversityName = (String) request.getParameter("UniversityName");
-                message = (String) hud.addUniversity(newUniversityName);
+                message = FormCheker.chekFormParameter(request.getParameter("UniversityName"));
+                if(message.equals("Operation success!")){
+                message = (String) hud.addUniversity(request.getParameter("UniversityName"));
+                }
                 request.setAttribute("Message", message);
                 request.getRequestDispatcher("Message.jsp").forward(request, response);
         }

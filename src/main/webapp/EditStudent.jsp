@@ -41,14 +41,14 @@
         <form name="EditFirstName" action="WebAppServlet">
             <%= firstName%>
             <input type="hidden" name="formName" value="EditFirstName">
-            <input type="text" name="NewFirstName" value="NewName">
+            <input type="text" name="NewFirstName" value="">
             <input type="submit" value="Change">
         </form>
             
         <form name="EditLastName" action="WebAppServlet">
             <%= lastName%>
             <input type="hidden" name="formName" value="EditLastName">
-            <input type="text" name="NewLastName" value="NewName">
+            <input type="text" name="NewLastName" value="">
             <input type="submit" value="Change">
         </form>
             
